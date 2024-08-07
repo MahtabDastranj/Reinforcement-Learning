@@ -1,6 +1,13 @@
 import gym
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import style
+import numpy as np
+import os
+import cv2
+
 
 env = gym.make("MountainCar-v0")
 env.reset()
@@ -32,7 +39,7 @@ epsilon_decay_value = epsilon/(END_EPSILON_DECAYING - START_EPSILON_DECAYING)
     to do a lot of exploration.Over time it reaches a reward and then by using Q function it will back propagate that 
     reward to make for higher Q values for the action chained togather lead to reward'''
 
-q_table = np.random.uniform(Low=-2, high=0, size=(DISCRETE_OS_SIZE + [env.action_space.n]))
+q_table = np.random.uniform(low=-2, high=0, size=(DISCRETE_OS_SIZE + [env.action_space.n]))
 # size = every combination of observations + number of actions (which creates the dimension)
 # print(q_table.shape)
 ep_rewards = []
@@ -90,6 +97,8 @@ for episode in range(EPISODES):
         aggr_ep_rewards['max'].append(max(ep_rewards[-SHOW_EVERY:]))
 
         print(f'Episode: {episode} avg: {average_reward} min: {min(ep_rewards[-SHOW_EVERY:])}')
+        '''if episode % 10 == 0:
+            np.save(f"qtables/{episode}-qtable.npy", q_table)'''
 
 env.close()
 
@@ -98,3 +107,55 @@ plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['min'], label='Min')
 plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['max'], label='Max')
 plt.legend(loc=4)
 plt.show()
+
+style.use('ggplot')
+
+
+def get_q_color(value, vals):
+    if value == max(vals):
+        return "green", 1.0
+    else:
+        return "red", 0.3
+
+
+fig = plt.figure(figsize=(12, 9))
+
+
+for i in range(0, 25000, 10):
+    print(i)
+    ax1 = fig.add_subplot(311)
+    ax2 = fig.add_subplot(312)
+    ax3 = fig.add_subplot(313)
+
+    q_table = np.load(f"qtables/{i}-qtable.npy")
+
+    for x, x_vals in enumerate(q_table):
+        for y, y_vals in enumerate(x_vals):
+            ax1.scatter(x, y, c=get_q_color(y_vals[0], y_vals)[0], marker="o", alpha=get_q_color(y_vals[0], y_vals)[1])
+            ax2.scatter(x, y, c=get_q_color(y_vals[1], y_vals)[0], marker="o", alpha=get_q_color(y_vals[1], y_vals)[1])
+            ax3.scatter(x, y, c=get_q_color(y_vals[2], y_vals)[0], marker="o", alpha=get_q_color(y_vals[2], y_vals)[1])
+
+            ax1.set_ylabel("Action 0")
+            ax2.set_ylabel("Action 1")
+            ax3.set_ylabel("Action 2")
+
+    # plt.show()
+    plt.savefig(f"qtable_charts/{i}.png")
+    plt.clf()
+
+
+def make_video():
+    # windows:
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('qlearn.avi', fourcc, 60.0, (1200, 900))
+
+    for i in range(0, 14000, 10):
+        img_path = f"qtable_charts/{i}.png"
+        print(img_path)
+        frame = cv2.imread(img_path)
+        out.write(frame)
+
+    out.release()
+
+
+make_video()
