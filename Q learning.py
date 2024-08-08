@@ -1,6 +1,4 @@
 import gym
-import numpy as np
-import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 from matplotlib import style
@@ -31,13 +29,15 @@ START_EPSILON_DECAYING = 1
 END_EPSILON_DECAYING = EPISODES // 2 # We'll have an int instead of integer
 epsilon_decay_value = epsilon/(END_EPSILON_DECAYING - START_EPSILON_DECAYING)
 
-'''Creating Q tables: 
+'''
+Creating Q tables: 
     The first row will be the number of actions available in the Q table.
     The first column will be the number of states available in the Q table. It's kinda a combination 
     of for example position and velocity. For a given situation they go back to the Q table, check the q values for 
     a specific combination and choose the largest number assigned to the regarding action. Initially the agent is going 
     to do a lot of exploration.Over time it reaches a reward and then by using Q function it will back propagate that 
-    reward to make for higher Q values for the action chained togather lead to reward'''
+    reward to make for higher Q values for the action chained togather lead to reward
+'''
 
 q_table = np.random.uniform(low=-2, high=0, size=(DISCRETE_OS_SIZE + [env.action_space.n]))
 # size = every combination of observations + number of actions (which creates the dimension)
