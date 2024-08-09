@@ -1,3 +1,3 @@
-# Reinforcment-Learning
+# Reinforcement-Learning
  Tutorial
-Link : https://pythonprogramming.net/q-learning-analysis-reinforcement-learning-python-tutorial/
+Link : https://pythonprogramming.net/q-learning-reinforcement-learning-python-tutorial/#google_vignette
