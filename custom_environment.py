@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import pickle  # to save/load Q-Tables
 from matplotlib import style  # to make pretty charts.
 import time  # using this to keep track of our saved Q-Tables.
+
+'Environment size, constant and variables'
 style.use('ggplot')
 SIZE = 10
 HM_EPISODES = 25000
@@ -28,6 +30,7 @@ d = {1: (255, 175, 0),
      3: (0, 0, 255)}
 
 
+'Blob'
 class Blob:
     def __init__(self):
         self.x = np.random.randint(0, SIZE)
@@ -68,7 +71,7 @@ class Blob:
         elif self.y > SIZE - 1:
             self.y = SIZE - 1
 
-
+'Q table'
 if start_q_table is None:
     q_table = {}
     # (x1, y1), (x2, y2)
@@ -125,7 +128,7 @@ for episode in range(HM_EPISODES):
 
         q_table[obs][action] = new_q
 
-        episode_rewards += reward
+        episode_reward += reward
 
         if show:
             env = np.zeros((SIZE, SIZE, 3), dtype=np.uint8)
@@ -146,7 +149,7 @@ for episode in range(HM_EPISODES):
 
     episode_rewards.append(episode_reward)
     epsilon *= EPS_DECAY
-
+'Graphs and savings'
 moving_avg = np.convolve(episode_rewards, np.ones((SHOW_EVERY,)) / SHOW_EVERY, mode='valid')
 plt.plot([i for i in range(len(moving_avg))], moving_avg)
 plt.ylabel(f"Reward {SHOW_EVERY}ma")
